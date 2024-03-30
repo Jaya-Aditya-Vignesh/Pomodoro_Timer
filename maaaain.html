@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Reverse Timer</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+    <link rel="stylesheet" href="csss.css">
+</head>
+
+<body class="bgg">
+    <script src="javaa.js"></script>
+    <div class="header">
+        <a href="#default" class="logo"><img src="https://e7.pngegg.com/pngimages/503/624/png-clipart-nutrition-dietitian-healthy-diet-dietary-supplement-nutrition-food-text.png" width="30" height="27">POMODORO TIMER</a>
+        <div class="header-right">
+            <a class="active" href="#home">Home</a>
+
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <p style="text-align: center;"><i>Focus On your Studies with Proper Planning</i></p>
+
+    <div id="app" class="boxx">
+        <div class="boxx-right">
+            <a class="active" href="#home">Pomodoro</a>
+
+            <a href="break.html">Break</a>
+        </div>
+        <div class="timer center">{{ formattedTime }}</div>
+
+        <div class="progress-bar">
+            <div class="progress" :style="{ width: progressWidth }"></div>
+        </div>
+
+        <div class="session-counter">
+            Sessions Completed: {{ sessionCounter }}
+        </div>
+        <div>
+            <button @click="start" v-if="!isRunning">Start</button>
+            <button @click="stop" v-if="isRunning">Stop</button>
+            <button @click="reset">Reset</button>
+        </div>
+        <div style="margin: auto;">
+            <input type="number" v-model="inputTime" min="1" placeholder="Enter time in minutes">
+            <button @click="setTime">Set Timer</button>
+        </div>
+    </div>
+
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                isRunning: false,
+                initialTime: 1500, 
+                time: 0,
+                interval: null,
+                showDialog: false,
+                inputTime: '', 
+                sessionCounter: 0
+            },
+            computed: {
+                formattedTime() {
+                    const minutes = Math.floor(this.time / 60);
+                    const seconds = this.time % 60;
+                    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                },
+                progressWidth() {
+                    return ((this.initialTime - this.time) / this.initialTime) * 100 + "%";
+                }
+            },
+            methods: {
+                start() {
+                    if (this.time === 0) {
+                        this.time = this.initialTime;
+                    }
+                    this.isRunning = true;
+                    this.interval = setInterval(() => {
+                        if (this.time > 0) {
+                            this.time--;
+                        } else {
+                            this.stop();
+                            this.playAudio();
+                            this.showDialog = true; 
+                            this.sessionCounter++;
+                            
+                        }
+                    }, 1000);
+                },
+                stop() {
+                    this.isRunning = false;
+                    clearInterval(this.interval);
+                },
+                reset() {
+                    this.stop();
+                    this.time = 0;
+                    this.showDialog = false; 
+                },
+
+                closeDialog() {
+                    this.showDialog = false;
+                },
+
+                playAudio() {
+                    var audio = new Audio("alarm.mp3"); 
+                    audio.play();
+
+
+                },
+                setTime() {
+                    if (this.inputTime && this.inputTime > 0) {
+                        this.initialTime = this.inputTime * 60; 
+                        this.time = this.initialTime;
+                    } else {
+                        alert("Please enter a valid time in minutes.");
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
